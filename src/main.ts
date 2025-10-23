@@ -16,9 +16,28 @@ async function bootstrap() {
     transform: true
   }));
 
-  // Configuración de CORS
+  // Configuración de CORS: permitir domain del front en Vercel y localhost para desarrollo
+  const allowedOrigins = [
+    'https://front-seven-lilac.vercel.app',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+  ];
+
+  // Si existe una variable CORS_ORIGIN en la configuración, permitir su uso adicional
+  const envOrigin = configService.get<string>('CORS_ORIGIN');
+  if (envOrigin) {
+    allowedOrigins.push(envOrigin);
+  }
+
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN') || '*',
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('CORS policy: This origin is not allowed'), false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: [
