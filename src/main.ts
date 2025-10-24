@@ -19,6 +19,8 @@ async function bootstrap() {
   // Configuración de CORS: permitir domain del front en Vercel y localhost para desarrollo
   const allowedOrigins = [
     'https://front-seven-lilac.vercel.app',
+    'https://www.murrayandsonconstruction.ca/',
+    'https://murrayandsonconstruction.ca/',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
   ];
