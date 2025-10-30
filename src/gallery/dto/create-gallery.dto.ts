@@ -1,5 +1,5 @@
 // src/gallery/dto/create-gallery.dto.ts
-import { IsString, IsArray, ArrayNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsArray, ArrayNotEmpty, IsOptional, IsIn } from 'class-validator';
 
 export class CreateGalleryDto {
   @IsOptional()
@@ -11,6 +11,11 @@ export class CreateGalleryDto {
 
   @IsString()
   description: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['generic', 'background-main', 'background-gallery', 'hero', 'thumbnail'])
+  imageType?: string;
 
 
 }

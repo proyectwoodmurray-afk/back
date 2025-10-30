@@ -33,6 +33,7 @@ export class GalleryService {
       const newGallery = new this.galleryModel({
         ...dto,
         imageUrl: result.secure_url,
+        imageType: dto.imageType || 'generic',
       });
       
       return await newGallery.save();

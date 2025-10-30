@@ -14,6 +14,9 @@ export class Gallery {
 
   @Prop({ required: true })
   description: string;
+  
+  @Prop({ required: true, default: 'generic' })
+  imageType: string;
 
 }
 export const GallerySchema = SchemaFactory.createForClass(Gallery);
