@@ -17,25 +17,27 @@ async function bootstrap() {
   }));
 
   // Configuración de CORS: permitir domain del front en Vercel y localhost para desarrollo
-  const allowedOrigins = [
+  // Dominios permitidos (sin slash final)
+  const allowedOrigins = new Set([
     'https://front-seven-lilac.vercel.app',
-    'https://www.murrayandsonconstruction.ca/',
-    'https://murrayandsonconstruction.ca/',
+    'https://www.murrayandsonconstruction.ca',
+    'https://murrayandsonconstruction.ca',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-  ];
+  ].map(o => o.replace(/\/$/, '')));
 
   // Si existe una variable CORS_ORIGIN en la configuración, permitir su uso adicional
   const envOrigin = configService.get<string>('CORS_ORIGIN');
   if (envOrigin) {
-    allowedOrigins.push(envOrigin);
+    envOrigin.split(',').map(s => s.trim()).filter(Boolean).forEach(o => allowedOrigins.add(o.replace(/\/$/, '')));
   }
 
   app.enableCors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
+      const normalized = origin.replace(/\/$/, '');
+      if (allowedOrigins.has(normalized)) {
         return callback(null, true);
       }
       return callback(new Error('CORS policy: This origin is not allowed'), false);
