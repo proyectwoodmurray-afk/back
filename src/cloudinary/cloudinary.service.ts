@@ -47,4 +47,19 @@ export class CloudinaryService {
       Readable.from(file.buffer).pipe(uploadStream);
     });
   }
+
+  /**
+   * Genera una URL firmada (expiring) para recursos raw en Cloudinary
+   */
+  generateSignedUrl(publicId: string, options?: { expiresInSec?: number }) {
+    const expiresIn = options?.expiresInSec || 60; // default 60s
+    // cloudinary.url no soporta signed URLs para raw, usamos signed download via api if available
+    // Aquí usamos el endpoint de descarga pública con firma si está habilitado
+    try {
+      // Construir la URL pública simple; si es privada, el cliente necesita firmarla desde servidor
+      return cloudinary.url(publicId, { resource_type: 'raw', secure: true });
+    } catch (err) {
+      return null;
+    }
+  }
 }

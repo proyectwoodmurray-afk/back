@@ -24,6 +24,9 @@ export class WorkWithUs {
   resume?: string; // URL o path del archivo
 
   @Prop()
+  resumePublicId?: string;
+
+  @Prop()
   coverLetter?: string;
 }
 
