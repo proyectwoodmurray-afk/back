@@ -1,5 +1,7 @@
 // src/gallery/gallery.controller.ts
 import { Controller, Post, Get, Delete, Param, Body, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Patch } from '@nestjs/common';
+import { UpdateGalleryDto } from './dto/update-gallery.dto';
 import { GalleryService } from './gallery.service';
 import { CreateGalleryDto } from './dto/create-gallery.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -32,6 +34,17 @@ export class GalleryController {
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.galleryService.delete(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
+  async update(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: UpdateGalleryDto
+  ) {
+    return this.galleryService.update(id, file, dto);
   }
 
   @Get('tags/:tags')

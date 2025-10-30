@@ -68,4 +68,29 @@ export class GalleryService {
   findByTags(tags: string[]) {
     return this.galleryModel.find({ tags: { $in: tags } }).exec();
   }
+
+  async update(id: string, file: Express.Multer.File | undefined, dto: any) {
+    const item = await this.galleryModel.findById(id);
+    if (!item) throw new BadRequestException('Imagen no encontrada');
+
+    // If a new file is provided, upload and replace
+    if (file) {
+      try {
+        // Delete old image from Cloudinary
+        const oldPublicId = item.imageUrl.split('/').slice(-1)[0].split('.')[0];
+        await cloudinary.uploader.destroy(`gallery/${oldPublicId}`);
+      } catch (err) {
+        // Log but continue
+        console.warn('Failed to delete old Cloudinary image:', err.message || err);
+      }
+      const result = await this.cloudinaryService.uploadImage(file);
+      item.imageUrl = result.secure_url;
+    }
+
+    if (dto.title !== undefined) item.title = dto.title;
+    if (dto.description !== undefined) item.description = dto.description;
+    if (dto.imageType !== undefined) item.imageType = dto.imageType;
+
+    return item.save();
+  }
 }
